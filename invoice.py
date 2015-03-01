@@ -62,8 +62,8 @@ document_type_map = {
 };
 
 responsability_map = {
-    "IVARI":  "I", # Inscripto, 
-    "IVARNI": "N", # No responsable, 
+    "IVARI":  "I", # Inscripto,
+    "IVARNI": "N", # No responsable,
     "RM":     "M", # Monotributista,
     "IVAE":   "E", # Exento,
     "NC":     "U", # No categorizado,
@@ -74,7 +74,7 @@ responsability_map = {
 
 class invoice(osv.osv):
     """"""
-    
+
     _name = 'account.invoice'
     _inherits = {  }
     _inherit = [ 'account.invoice' ]
@@ -164,8 +164,9 @@ class invoice(osv.osv):
 
                 r = journal.make_fiscal_ticket(ticket)[inv.journal_id.id]
 
-        if r and 'error' not in r:
-            import pdb; pdb.set_trace()
+        if not r:
+            return True
+        elif r and 'error' not in r:
             return True
         elif r and 'error' in r:
             raise osv.except_osv(_(u'Cancelling Validation'),
