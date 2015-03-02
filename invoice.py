@@ -162,7 +162,7 @@ class invoice(osv.osv):
                         "taxes_rate": 0
                     })
 
-                r = journal.make_fiscal_ticket(ticket)[inv.journal_id.id]
+                r = journal.make_ticket_factura(ticket)[inv.journal_id.id]
 
         if not r:
             return True
