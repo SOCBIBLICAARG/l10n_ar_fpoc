@@ -90,7 +90,7 @@ class invoice(osv.osv):
             return False
 
         for inv in self.browse(cr, uid, ids, context):
-            if inv.journal_id.use_fiscal_printer:
+            if inv.journal_id.use_fiscal_printer and not inv.internal_number:
                 journal = inv.journal_id
                 ticket={
                     "turist_ticket": False,
