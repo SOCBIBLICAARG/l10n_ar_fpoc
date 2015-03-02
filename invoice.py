@@ -59,7 +59,6 @@ class invoice(osv.osv):
                                  _(u'Please, validate one ticket at time.'))
             return False
         for inv in self.browse(cr, uid, ids, context):
-            import pbd; pdb.set_trace()
             if inv.journal_id.use_fiscal_printer and not inv.internal_number:
                 journal = inv.journal_id
                 ticket={
