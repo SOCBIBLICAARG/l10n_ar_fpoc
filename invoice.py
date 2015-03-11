@@ -1,33 +1,8 @@
-# -*- coding: utf-8 -*-
-##############################################################################
-#
-#    fiscal_printer
-#    Copyright (C) 2014 No author.
-#    No email
-#
-#    This program is free software: you can redistribute it and/or modify
-#    it under the terms of the GNU Affero General Public License as
-#    published by the Free Software Foundation, either version 3 of the
-#    License, or (at your option) any later version.
-#
-#    This program is distributed in the hope that it will be useful,
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#    GNU Affero General Public License for more details.
-#
-#    You should have received a copy of the GNU Affero General Public License
-#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-#
-##############################################################################
-
-
 import re
 from openerp import netsvc
 from openerp.osv import osv, fields
 from openerp.tools.translate import _
-
 _vat = lambda x: x.tax_code_id.parent_id.name == 'IVA'
-
 document_type_map = {
     "DNI":      "D",
     "CUIL":     "L",
@@ -60,7 +35,6 @@ document_type_map = {
     "LC":       "V",
     "LE":       "E",
 };
-
 responsability_map = {
     "IVARI":  "I", # Inscripto,
     "IVARNI": "N", # No responsable,
@@ -71,26 +45,21 @@ responsability_map = {
     "RMS":    "T", # Monotributista social,
     "RMTIP":  "P", # Monotributista trabajador independiente promovido.
 }
-
 class invoice(osv.osv):
     """"""
-
     _name = 'account.invoice'
     _inherits = {  }
     _inherit = [ 'account.invoice' ]
-
     def action_fiscal_printer(self, cr, uid, ids, context=None):
         picking_obj = self.pool.get('stock.picking')
         user_obj = self.pool.get('res.users')
-
         r = {}
         if len(ids) > 1:
             raise osv.except_osv(_(u'Cancelling Validation'),
                                  _(u'Please, validate one ticket at time.'))
             return False
-
         for inv in self.browse(cr, uid, ids, context):
-            if inv.journal_id.use_fiscal_printer:
+            if inv.journal_id.use_fiscal_printer and not inv.internal_number:
                 journal = inv.journal_id
                 ticket={
                     "turist_ticket": False,
@@ -161,9 +130,7 @@ class invoice(osv.osv):
                         "fixed_taxes": 0,
                         "taxes_rate": 0
                     })
-
-                r = journal.make_fiscal_ticket(ticket)[inv.journal_id.id]
-
+                r = journal.make_ticket_factura(ticket)[inv.journal_id.id]
         if not r:
             return True
         elif r and 'error' not in r:
@@ -174,7 +141,4 @@ class invoice(osv.osv):
         else:
             raise osv.except_osv(_(u'Cancelling Validation'),
                                  _(u'Unknown error.'))
-
 invoice()
-
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
